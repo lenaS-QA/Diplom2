@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.Before;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
-import static org.hamcrest.Matchers.notNullValue;
 
 public class OrderCreateTest {
     private User user;
@@ -44,22 +43,22 @@ public class OrderCreateTest {
         String orderId = response.extract().path("order._id");
 
         Assert.assertEquals(200, statusCode);
-        Assert.assertEquals(true, isCreate);
-        Assert.assertEquals(notNullValue(), orderNumber);
+        Assert.assertTrue(isCreate);
+        Assert.assertNotNull(orderNumber);
         Assert.assertNotNull(orderId);
     }
 
     @Test
     @DisplayName("Create order without authorization")
-    public void CreateOrderWithoutAuthorization() {
+    public void createOrderWithoutAuthorization() {
         fillListIngredients();
+        ValidatableResponse responseCreate = userClient.create(user);
+        String accessToken = responseCreate.extract().path("accessToken");
         ValidatableResponse response = orderClient.createOrderWithoutAuthorization(order);
         int statusCode = response.extract().statusCode();
-        boolean isCreate = response.extract().path("success");
         int orderNumber = response.extract().path("order.number");
 
         Assert.assertEquals(200, statusCode);
-        Assert.assertEquals(true, isCreate);
         Assert.assertNotNull(orderNumber);
     }
 

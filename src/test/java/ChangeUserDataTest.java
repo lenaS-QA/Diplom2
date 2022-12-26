@@ -1,6 +1,5 @@
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +25,6 @@ public class ChangeUserDataTest {
         ValidatableResponse responseCreate = userClient.create(user);
         accessToken = responseCreate.extract().path("accessToken");
         userClient.login(Credentials.from(user));
-        //User user1 = new User("tom22@yandex.ru", "55555", "Tomas");
         ValidatableResponse responseChangeData = userClient.changeData(user1, accessToken);
         String actualEmail = responseChangeData.extract().path("user.email");
         String actualName = responseChangeData.extract().path("user.name");
@@ -45,7 +43,6 @@ public class ChangeUserDataTest {
     @DisplayName("Change user data without login")
     public void changeEmailAndNameWithoutLogin() {
         userClient.create(user);
-        //User user1 = new User("tom2@yandex.ru", "55555", "Tomas");
         ValidatableResponse responseChangeDataWithoutToken = userClient.changeDataWithoutToken(user1);
         boolean isEmailChanged = responseChangeDataWithoutToken.extract().path("success");
         String message = responseChangeDataWithoutToken.extract().path("message");
@@ -56,10 +53,6 @@ public class ChangeUserDataTest {
         Assert.assertFalse(isEmailChanged);
         Assert.assertEquals("You should be authorised", message);
         Assert.assertEquals(401, statusCodeResponseLogin);
-    }
-
-    @After
-    public void cleanUp() {
         ValidatableResponse responseLogin1 = userClient.login(Credentials.from(user));
         accessToken = responseLogin1.extract().path("accessToken");
         userClient.delete(accessToken);
